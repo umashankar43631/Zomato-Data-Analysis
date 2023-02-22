@@ -42,42 +42,31 @@ def values_gt_mean(d2):
 
 dash.register_page(__name__, path='/')
 
-# x = df1[df1['Country']=='India']
-# costlier_cuisine = x[x['rupees']==max(x['rupees'])]['Cuisines'].astype('str')
-# costlier_cuisine = costlier_cuisine.unique()[0]
-
-# cost = df1[df1[df1['Country']=='India']]
-
-x = df1[df1['Country']=='India']
-y = sorted(x['rupees'], reverse=True)[0]
-
-costlier_cuisine = x[x['rupees']==y]['Cuisines'].astype('str')
-costlier_cuisine = str(costlier_cuisine.unique()[0])
-print(x['rupees'].head())
-
 layout = html.Div([
    
    html.H1('Data Analysis'),
 
    html.Div([
-    html.Table([
+    html.Table(children = [
        html.Thead(
            html.Tr([
     html.Th([
-        # html.Span(id="Country_id", ),
-        html.Span("India's Costlier Cuisine"),
+        html.Span(id="Country_id" ),
+        html.Span("'s Costlier Cuisine"),
     ])
     ])
        ),
        html.Tbody([
            html.Tr([
                html.Td([
-                html.Span(costlier_cuisine)
+                html.Span(id = 'costlier_cuisine')
                ])
            ])
            
        ])
-    ]) ] ),
+    ]
+    
+    )  ], style={'margin': '10px', 'padding': '5px', 'background-color':'silver', 'display': 'inline-block'} ),
 
    html.Div([
    dcc.Dropdown(id='data-dropdown', options=[
@@ -92,14 +81,15 @@ layout = html.Div([
     ])
 ] )          
 
-#   Output('Country_id', 'children'),
-    # Output('Costlier_cuis', 'children')
+
 
 @callback([
+    Output('Country_id', 'children'),
+    Output('costlier_cuisine', 'children'),
     Output('fig', 'figure'),
     Output('fig1', 'figure'),
     Output('fig', 'style'),
-    Output('fig1', 'style'),
+    Output('fig1', 'style')
 ],
     Input('data-dropdown', 'value'))
 def task1(value):
@@ -141,6 +131,8 @@ def task1(value):
         'display': 'inline',
         'float': 'left'
     }
+
+    costlier_cuisine = filtered_df[filtered_df['rupees']== max(filtered_df['rupees'])]['Cuisines'].astype('str')
+    costlier_cuisine = ''.join(costlier_cuisine.unique())
     
-    
-    return fig, fig1,graph1_style, graph2_style
+    return value, costlier_cuisine, fig, fig1,graph1_style, graph2_style

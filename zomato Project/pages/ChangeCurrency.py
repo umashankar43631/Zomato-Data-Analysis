@@ -8,8 +8,6 @@ class ChangeCurrency:
     # returning iterator
       return df1[df1['Currency'] == currencyName ].index[:]
   def changeToIndian(self, df1, currencyName):
-      if(currencyName == 'Indian Rupees(Rs.)'):
-          return "you are converting rupee to rupee, its not needed"
       for i in self.getIndex(df1,currencyName):
           if(currencyName == 'Botswana Pula(P)'):
               if(df1.iloc[i]['rupees'] == 0):
@@ -44,4 +42,8 @@ class ChangeCurrency:
           elif(currencyName == 'Turkish Lira(TL)'):
               if(df1.iloc[i]['rupees'] == 0):
                   df1.iloc[i]['rupees'] = df1.iloc[i]['Average Cost for two']* 4.33
-    
+          elif(currencyName == 'Indian Rupees(Rs.)'):
+              if(df1.iloc[i, -1]['rupees'] == 0 ):
+                  df1.iloc[i, -1] = df1.iloc[i]['Average Cost for two']
+
+

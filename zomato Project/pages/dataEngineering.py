@@ -25,5 +25,7 @@ def dataEngineering(df1):
 
     obj1.changeToIndian(df1,'Turkish Lira(TL)')
 
+    obj1.changeToIndian(df1, 'Indian Rupees(Rs.)')
+
     return df1
 
