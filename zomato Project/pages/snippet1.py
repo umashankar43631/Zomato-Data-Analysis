@@ -39,10 +39,29 @@ for i in df1.index:
     df1.iloc[i,-1] = 'Turkey'
   elif( df1.iloc[i]['Country Code'] == 214 ):
     df1.iloc[i,-1] = 'UAE'
-  elif( df1.iloc[i]['Country Code'] == 215 ):
+  elif( df1.iloc[i]['Country Code'] == 215  ):
     df1.iloc[i,-1] = 'United Kingdom (UK)'
   elif( df1.iloc[i]['Country Code'] == 216 ):
     df1.iloc[i,-1] = 'United States'
+  elif(df1.iloc[i]['Country Code'] == 191):
+    df1.iloc[i,-1] = 'Srilanka'
 
 # Changes for Indias's costly Cuisines
 # print(len(df1[df1['Currency']=='Dollar($)']))
+# ------------------------
+# Rating of a city based on restaurant's rating text column
+df1['rating_num'] = 0
+
+for i in df1.index:
+  if( df1.iloc[i]['Rating text'].lower().strip() == 'average' or df1.iloc[i]['Rating text'].lower().strip() == 'not rated' ):
+    df1.iloc[i,-1] = 0
+  elif( df1.iloc[i]['Rating text'].lower().strip() == 'poor' ):
+    df1.iloc[i,-1] = -1
+  elif(df1.iloc[i]['Rating text'].lower().strip() == 'good'):
+    df1.iloc[i,-1] = 1
+  elif(df1.iloc[i]['Rating text'].lower().strip() == 'very good'):
+    df1.iloc[i,-1] = 2
+  elif(df1.iloc[i]['Rating text'].lower().strip() == 'excellent'):
+    df1.iloc[i,-1] = 3
+  
+

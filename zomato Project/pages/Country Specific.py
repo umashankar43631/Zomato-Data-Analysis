@@ -40,6 +40,24 @@ def values_gt_mean(d2):
             d3[i] = j
     return d3 
 
+def get_avg_rating(filtered_df):
+    sum_of_ratings = 0
+    for i in filtered_df.index:
+        sum_of_ratings += filtered_df.iloc[i]['rating_num']
+    length_of_df = len(filtered_df)
+    if(sum_of_ratings// length_of_df >= 3):
+        return "Excellent - 5.0 "
+    elif(sum_of_ratings// length_of_df >= 2):
+        return "Very Good - 4.5 "
+    elif(sum_of_ratings// length_of_df >= 1):
+        return "Good - 4.0"
+    elif(sum_of_ratings// length_of_df >= 0):
+        return "Average - 3.5"
+    else:
+        return "Poor - 3.0"
+    
+    
+
 dash.register_page(__name__, path='/')
 
 layout = html.Div([
@@ -50,21 +68,53 @@ layout = html.Div([
     html.Table(children = [
        html.Thead(
            html.Tr([
-    html.Th([
-        html.Span(id="Country_id" ),
-        html.Span("'s Costlier Cuisine"),
-    ])
-    ])
+                        html.Th([
+                            
+                            html.Span(id="Country_id" ),
+                            html.Span("'s Costlier Cuisine"),
+                                ], 
+                        style={      
+                               'border': '2px solid black', 'padding': '3px', 'margin': '5px'
+                            }
+                                ),
+
+                        html.Th([
+                            
+                            html.Span(id="Country_id1" ),
+                            html.Span("'s Cuisine's Rating"),
+                                ], 
+                        style={      
+                               'border': '2px solid black', 'padding': '3px', 'margin': '5px'
+                            }
+                                )
+
+                ])
        ),
        html.Tbody([
            html.Tr([
                html.Td([
-                html.Span(id = 'costlier_cuisine')
-               ])
-           ])
+                html.Span(id = 'costlier_cuisines')
+               ]
+                   ,
+           style={      
+                    'border': '2px solid orange', 'text-align': 'center' ,'padding': '3px', 'margin': '5px', 'color': 'orange', 'background-color':'black'
+                    }               
+               ),
+             html.Td([
+                html.Span(id = 'rating_cuisines')
+               ]
+                   ,
+           style={      
+                    'border': '2px solid #c44dff' ,'padding': '3px', 'text-align': 'center' , 'margin': '5px', 'color': '#3bed18', 'background-color':'black'
+                    }               
+               )
+
+           ] 
+           )
            
        ])
-    ]
+    ], style = { 'border': '2px solid black', 'padding': '3px', 'margin': '5px'
+                         }
     
     )  ], style={'margin': '10px', 'padding': '5px', 'background-color':'silver', 'display': 'inline-block'} ),
 
@@ -76,8 +126,20 @@ layout = html.Div([
     html.Br(),
     html.Br(),
     html.Div(children= [
-    dcc.Graph(id="fig"),
-    dcc.Graph(id='fig1')
+    dcc.Graph(id="graph1"),
+        dcc.Graph(id='graph2')
+    
+    ]),
+
+    html.Br(),
+    html.Br(),
+    html.Div([
+    
+    ]),
+    html.Br(),
+    html.Br(),
+    html.Div(children = [
+        dcc.Graph(id='graph3', style={'display': 'block'})
     ])
 ] )          
 
@@ -85,18 +147,19 @@ layout = html.Div([
 
 @callback([
     Output('Country_id', 'children'),
-    Output('costlier_cuisine', 'children'),
-    Output('fig', 'figure'),
-    Output('fig1', 'figure'),
-    Output('fig', 'style'),
-    Output('fig1', 'style')
+    Output('Country_id1', 'children'),
+    Output('costlier_cuisines', 'children'),
+    Output('rating_cuisines', 'children'),
+    Output('graph1', 'figure'),
+    Output('graph2', 'figure'),
+    Output('graph3', 'figure')
 ],
     Input('data-dropdown', 'value'))
 def task1(value):
     if value is None:
         raise PreventUpdate
     filtered_df = df1[df1['Country']== value]
-    fig = px.histogram(filtered_df, x='Country', width=350)
+    fig = px.histogram(filtered_df, x='Country', width=350, color='Rating text')
     fig.update_layout(
         title=f"{value} restaurants count",
         xaxis_title="Country",
@@ -134,5 +197,30 @@ def task1(value):
 
     costlier_cuisine = filtered_df[filtered_df['rupees']== max(filtered_df['rupees'])]['Cuisines'].astype('str')
     costlier_cuisine = ''.join(costlier_cuisine.unique())
+
+    # Average rating of a city based on restaurants rating
+    sum_of_ratings = 0
+    j = 0
+    for i in filtered_df.index:
+        sum_of_ratings += (filtered_df.iloc[j]['rating_num'])
+        j+=1
+    length_of_df = len(filtered_df)
+    if(sum_of_ratings// length_of_df >= 3):
+        rating_cuisine =  "Excellent - 5.0 "
+    elif(sum_of_ratings// length_of_df >= 2):
+        rating_cuisine ="Very Good - 4.5 "
+    elif(sum_of_ratings// length_of_df >= 1):
+        rating_cuisine = "Good - 4.0"
+    elif(sum_of_ratings// length_of_df >= 0):
+        rating_cuisine = "Average - 3.5"
+    else:
+        rating_cuisine = "Poor - 3.0"
+
+    # --------------------------------
+    # Online vs Dine-in
+    d3=filtered_df.groupby(["Has Online delivery"])['Has Online delivery'].count()
+
+    fig2=px.pie(d3,names=['Dine-in', 'Online'], values=list(filtered_df['Has Online delivery'].value_counts()), title = "Online vs dine-in")
     
-    return value, costlier_cuisine, fig, fig1,graph1_style, graph2_style
+    # fig2 = px.pie(filtered_df, values='Has Online delivery', names='Has Online delivery')
+    return value ,value, costlier_cuisine, rating_cuisine, fig, fig1,fig2
