@@ -1,6 +1,8 @@
 import dash
 from dash import html, dcc, callback, Input, Output
 from dash.exceptions import PreventUpdate
+from plotly.subplots import make_subplots
+
 # import os
 # from os import path
 import numpy as np
@@ -59,6 +61,7 @@ def get_avg_rating(filtered_df):
     
 
 dash.register_page(__name__, path='/')
+fig = make_subplots(rows=1, cols=2)
 
 layout = html.Div([
    
@@ -125,11 +128,27 @@ layout = html.Div([
        placeholder= "Select Country", value='India')]),
     html.Br(),
     html.Br(),
-    html.Div(children= [
-    dcc.Graph(id="graph1"),
-        dcc.Graph(id='graph2')
+    # html.Div(children= [
+    # dcc.Graph(id="graph1"),
+    #     dcc.Graph(id='graph2')
     
+    # ]),
+
+    # dcc.Graph(id='graph', style={'display': 'inline', 'float': 'left'}),
+    # dcc.Graph(id='graph1', style={'display': 'inline', 'float': 'right'}),
+
+  
+    html.P([   
+            
+            dcc.Graph(id='graph'),            
+            dcc.Graph(id='graph1'),
+
     ]),
+    html.Br(),
+    dcc.Graph(id='graph2', style={'display': 'block'}),
+    
+
+
 
     html.Br(),
     html.Br(),
@@ -138,26 +157,37 @@ layout = html.Div([
     ]),
     html.Br(),
     html.Br(),
-    html.Div(children = [
-        dcc.Graph(id='graph3', style={'display': 'block'})
-    ])
+    # html.Div(children = [
+    #     dcc.Graph(id='graph3', style={'display': 'block'})
+    # ])
 ] )          
 
 
 
+# @callback([
+#     Output('Country_id', 'children'),
+#     Output('Country_id1', 'children'),
+#     Output('costlier_cuisines', 'children'),
+#     Output('rating_cuisines', 'children'),
+#     Output('graph1', 'figure'),
+#     Output('graph2', 'figure'),
+#     Output('graph3', 'figure')
+# ],
+#     Input('data-dropdown', 'value'))
 @callback([
     Output('Country_id', 'children'),
     Output('Country_id1', 'children'),
     Output('costlier_cuisines', 'children'),
     Output('rating_cuisines', 'children'),
+    Output('graph', 'figure'),
     Output('graph1', 'figure'),
     Output('graph2', 'figure'),
-    Output('graph3', 'figure')
+
 ],
     Input('data-dropdown', 'value'))
 def task1(value):
-    if value is None:
-        raise PreventUpdate
+    # if value is None:
+    #     raise PreventUpdate
     filtered_df = df1[df1['Country']== value]
     fig = px.histogram(filtered_df, x='Country', width=350, color='Rating text')
     fig.update_layout(
@@ -222,5 +252,8 @@ def task1(value):
 
     fig2=px.pie(d3,names=['Dine-in', 'Online'], values=list(filtered_df['Has Online delivery'].value_counts()), title = "Online vs dine-in")
     
+    # figure1 = go.Figure(data=[fig1])
+    # figure2 = go.Figure(data=[fig2])
+    # figure = go.Figure(data=[fig])
     # fig2 = px.pie(filtered_df, values='Has Online delivery', names='Has Online delivery')
-    return value ,value, costlier_cuisine, rating_cuisine, fig, fig1,fig2
+    return value ,value, costlier_cuisine, rating_cuisine, fig,fig1, fig2
